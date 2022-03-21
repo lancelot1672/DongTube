@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title><%=title%></title>
+        <link rel="stylesheet" type="text/css" href="../css/1.css">
+        <link rel="stylesheet" type="text/css" href="../css/2.css">
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/69223d03fa.js" crossorigin="anonymous"></script>
+    </head>
+    <header>
+        <h2 class="dtd-logo"><a href="/">DongTube</a></h2>
+        <div class="search1">
+            <input type="text" id="searchBox" maxlength="500" placeholder=" 검색">
+        </div>
+        <div class="search1">
+            <button id = "searchBtn">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+        <div class="login">
+            <% if(!request.user) {%>
+            <button id="loginBtn" onclick="location.href='/auth/login'">
+                <i class="fa-thin fa-user"></i>
+                <span>로그인</span>
+            </button>
+            <%}else{ %>
+            <button id="logoutBtn" onclick="location.href='/auth/logout'">
+                <i class="fa-thin fa-user"></i>
+                <span>로그아웃</span>
+            </button>
+            <%} %>
+        </div>
+        <div class="upload">
+            <!-- create, update, delete 기능-->
+            <a href='/uv/upload'>Upload</a>
+        </div>
+    </header>   
+    <body>
+        <div class="main">
+        <div id="videoList">
+            <ul>
+                <% 
+                    if(list){
+                        for(let i=0; i<list.length; i++){
+                %>
+                <li><a href="/watch?v=<%=list[i].videoId %>"><%=list[i].title %></a></li>
+                <%
+                        }
+                    }
+                %>
+            </ul>
+        </div>
+
+        </div>
+    </body>
+</html>

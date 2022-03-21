@@ -1,0 +1,36 @@
+div.row, div.main {
+    width: 100%;
+    display: flex;
+    background: linear-gradient(#FCFCFC, white);
+  }
+  div.left {
+    width: 80%;
+    float: left;
+    padding-top: 1rem;
+    padding-left: 2rem;
+    margin-left: 2rem;
+    margin-right: 1rem;
+    
+  }
+  div.right {
+    width: 20%;
+    float: right;
+    padding-top: 1rem;
+    padding-right: 2rem;
+  }
+.d-video {
+    max-width: 100%;
+    height: auto;
+}
+.dtd-logo{
+    padding: 18px 14px 18px 16px;
+}
+
+.meta-1 {
+  max-width: 100%;
+  border-top:1px solid gray;
+}
+div.upload-form {
+  padding-top: 1rem;
+  margin-left: 2rem;
+}

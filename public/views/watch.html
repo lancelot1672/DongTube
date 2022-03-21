@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title><%=title %></title>
+        <link rel="stylesheet" type="text/css" href="../css/1.css">
+        <link rel="stylesheet" type="text/css" href="../css/2.css">
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+        <script>
+            function delectVideo(videoId){
+                // $.ajax({
+                //     async:flase,
+                //     url: '/video/delVideo',
+                //     dataType: 'json',
+                //     type: 'GET',
+                //     data: {data: videoId},
+                //     success: function(){
+                //         location.href="/";
+                //     }
+                // });
+
+            }
+        </script>
+    </head>
+    <header>
+        <h2 class="dtd-logo"><a href="/">DongTube</a></h2>
+        <div class="search1">
+            <input type="text" id="searchBox" maxlength="500" placeholder="검색">
+        </div>
+        <div class="search1">
+            <button id = "searchBtn">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+        <div class="delete">
+            <% if(!request.user) {%>
+                <%}else{ 
+                    if(request.user.user_id === author){    
+                %>
+                <button id="deleteBtn" onclick="location.href='/uv/delVideo?id=<%=videoId %>'">
+                    <i class="fa-thin fa-user"></i>
+                    <span>삭제</span>
+                </button>
+            <% }
+            } %>
+        </div>
+        <div class="login">
+            <% if(!request.user) {%>
+                <button id="loginBtn" onclick="location.href='/auth/login'">
+                    <i class="fa-thin fa-user"></i>
+                    <span>로그인</span>
+                </button>
+                <%}else{ %>
+                <button id="logoutBtn" onclick="location.href='/auth/logout'">
+                    <i class="fa-thin fa-user"></i>
+                    <span>로그아웃</span>
+                </button>
+            <%} %>
+        </div>
+    </header>
+<body>
+    <div class="row">
+        <div class="left">
+            <div class="left2">
+                <div>
+                    <video id="video" class="d-video" width="1280" height="720" controls></video>
+                </div>
+                <div class="info">
+                    <div>
+                        <h2><%=title %></h2>
+                    </div>
+                    <div>
+                        <span>
+                            조회수 <%=data[0].watch_count %> · <%=data[0].upload_date %>
+                        </span>
+                    </div>
+                </div>
+                <div class="meta-1">
+                    <p>Upload By <b><%=author%></b></p>
+                </div>
+                <div id="disqus_thread"></div>
+                <script>
+                /**
+                *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+                *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
+                /*
+                var disqus_config = function () {
+                this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+                this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                };
+                */
+                (function() { // DON'T EDIT BELOW THIS LINE
+                var d = document, s = d.createElement('script');
+                s.src = 'https://dongtube.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+                })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                </div>
+            </div>
+        </div>
+        <div class="right">
+
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+    const video = document.getElementById('video');
+    const videoSrc = '../videos/<%=videoId%>/<%=videoId%>.m3u8';
+
+    if (Hls.isSupported()) {
+        const hls = new Hls();
+
+        hls.loadSource(videoSrc);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            video.play();
+        });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = videoSrc;
+        video.addEventListener('loadedmetadata', () => {
+            video.play();
+        });
+    }
+    </script>
+</body>
+</html>

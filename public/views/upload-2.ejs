@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>업로드</title>
+        <link rel="stylesheet" type="text/css" href="../css/1.css">
+        <link rel="stylesheet" type="text/css" href="../css/2.css">
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    </head>
+    <header>
+        <h2 class="dtd-logo"><a href="/">DongTube</a></h2>
+        <div class="search1">
+            <input type="text" id="searchBox" maxlength="500" placeholder="검색">
+        </div>
+        <div class="search1">
+            <button id = "searchBtn">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+        <div class="login">
+            <% if(!request.user) {%>
+                <button id="loginBtn" onclick="location.href='/auth/login'">
+                    <i class="fa-thin fa-user"></i>
+                    <span>로그인</span>
+                </button>
+                <%}else{ %>
+                <button id="logoutBtn" onclick="location.href='/auth/logout'">
+                    <i class="fa-thin fa-user"></i>
+                    <span>로그아웃</span>
+                </button>
+            <%} %>
+        </div>
+    </header>
+<body>
+    <div class="main">
+        <div class="upload-form">
+            <form action="/uv/upload_process" method="post" enctype="multipart/form-data">
+                <label for="file">파일명</label>
+                <p><input type="text" name="title" placeholder="제목"></p>
+                <p><input type="file" name="file"></p>
+                <p><input type="submit" value="업로드"></p>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

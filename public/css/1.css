@@ -1,0 +1,69 @@
+header{
+    position: flex;
+    top: 0;
+    left: 0;
+    right: 0;
+    
+    height: 56px;
+    /* padding: 0px 10px; */
+    color: white;
+    background: white;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+body{
+    font-style: normal;
+}
+a{
+    text-decoration-line: none;
+}
+#searchBox {
+    width: 600px;
+    height: 2rem;
+    position: absolute;
+    top: 20px;
+    left: 600px;
+    font-size: 15px;
+}
+#searchBtn {
+    width: 70px;
+    height: 2.4rem;
+    padding: 0px;
+    position: absolute;
+    top: 20px;
+    left:1207px;
+
+    font-size: 20px;
+
+}
+#loginBtn, #logoutBtn{
+    width: 100px;
+    height: 2.4rem;
+    padding: 0px;
+    position: absolute;
+    top: 20px;
+    right:30px;
+    background-color: white;
+    border: 1px solid;
+    border-radius: 0px;
+    font-size: 15px;
+}
+#deleteBtn {
+    width: 100px;
+    height: 2.4rem;
+    padding: 0px;
+    position: absolute;
+    top: 20px;
+    right:140px;
+    background-color: white;
+    border: 1px solid;
+    border-radius: 0px;
+    font-size: 15px;
+}
+div.upload {
+    position: absolute;
+    top: 25px;
+    right:150px;
+    font-size: 20px;
+}
