@@ -14,10 +14,11 @@
         <script>
             function newComment(){
                 var comment = document.getElementById('comment-area').value;
+                console.log(comment);
                 $.ajax({
                         url: '/comment',
-                        dataType: 'json',
-                        type: 'POST',
+                        dataType: 'application/json',
+                        type: 'GET',
                         data: {
                             comment : comment,
                             videoId : '<%=videoId%>'

@@ -4,13 +4,13 @@ const rimraf = require('rimraf');
 const fs2 = require('fs-extra');
 var router = express.Router();
 //ffmpg
-var encoding = require('../lib/ffmpeg');
+var encoding = require('../../lib/ffmpeg');
 
 //multer
 var multer = require('multer');
 
 //DataBase
-var db = require('./db');
+var db = require('../../lib/db');
 
 //static
 router.use(express.static("public"));
