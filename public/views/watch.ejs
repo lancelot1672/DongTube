@@ -12,12 +12,32 @@
         <link href="../css/styles.css" rel="stylesheet" />
         <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
         <script>
+            function makeComment(result3){
+                let html = ``;
+                $.each(result3, function(index, el) {
+                    html += `
+                    <div class="d-flex mb-4">
+                
+                    <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." />
+                    </div>
+                        <div class="ms-3">
+                            <div class="fw-bold">
+                                ${el.user_name}
+                            </div>
+                            ${el.description}
+                        </div>
+                    </div>
+                    `;
+                });
+                $('#test2').html(html);
+            }
             function newComment(){
                 var comment = document.getElementById('comment-area').value;
-                console.log(comment);
-                $.ajax({
+
+                if('<%=request.user%>'){
+                    $.ajax({
                         url: '/comment',
-                        dataType: 'application/json',
+                        dataType: 'json',
                         type: 'GET',
                         data: {
                             comment : comment,
@@ -25,10 +45,18 @@
                         },
                         success: function(result){
                             if(result){
-                                console.log(result);
+                                var html = result.result;
+                                makeComment(html);
                             }
+                        },
+                        error : function(){
+                            console.log('??');
                         }
                     });
+                }else{
+                    alert('로그인 후 이용해주세요');
+                }
+              
             }
         </script>
     </head>
@@ -114,8 +142,8 @@
                                         </div> -->
                                     </div>
                                 </div>
-                                </div>
                                 <% }} %>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -169,7 +197,6 @@
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
-        <script src="js/scripts.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
         <script>
         const video = document.getElementById('video');

@@ -105,13 +105,43 @@ function(request, response){
 
 app.get('/comment', function(request, response){
     var data = request.query;
+    var videoId = data.videoId;
+    var user_id;
+    if(request.user){
+        user_id = request.user.user_id;
+    }else{
+        //오류 대비 - 로그인 페이지 이동
+        response.send();
+    }
     console.log('data : ', data.comment);
     console.log('data2 : ', data.videoId);
     
+    // 그룹에서의 제일 큰 값 + 1 그룹에 새 댓글 저장.
+    db.query('select max(vGroup) as vGroup from comment where v_id=?',[videoId], function(err1, result1){
+        if(err1){
+
+        }
+        var vGroup = result1[0].vGroup + 1;     //그룹에서의 제일 큰 값 + 1
+        console.log('vGroup : ', vGroup);
+        console.log('id : ', user_id);
+        db.query(`insert into comment (c_index, v_id, vGroup, vStep, vIndent, description, like_count, user_name) VALUES(DEFAULT,?,?,0,0,?,1,?)`
+            ,[videoId, vGroup, data.comment, user_id], function(err2, result2){
+            if(err2){
+                throw err2;
+            }
+            //response.send({result : 'success'})
+            db.query('select * from comment where v_id=?',[videoId], function(err3, result3){
+                if(err3){
+                }
+                response.send({result : result3});
+            });
+        });
+    });
+
     // console.log('comment :',data.comment);
     // console.log('videoId :',data.videoId);
 
-    response.send({result : 'success'});
+   
 });
 app.get('/', function(request, response){
     var title = "DongTube";
