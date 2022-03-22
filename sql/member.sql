@@ -13,13 +13,5 @@ INSERT INTO `member` VALUES ('lancelot1672','1111','Dore','developer');
 INSERT INTO `member` VALUES ('weak1331','1111','duru','database administrator');
 INSERT INTO `member` VALUES ('kdr8749','1111','taeho','data scientist, developer');
 
-CREATE TABLE `comment`(
-    `c_index` int AUTO_INCREMENT PRIMARY KEY,
-    `v_id` varchar(20) NOT NULL,
-    `vGroup` int NOT NULL,
-    `vStep` int NOT NULL,
-    `vIndent` int NOT NULL,
-    `description` varchar(100) NOT NULL,
-    `like_count` int NOT NULL,
-    `user_name` varchar(20) NOT NULL,
-)
+
+

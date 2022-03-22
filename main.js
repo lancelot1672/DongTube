@@ -6,8 +6,9 @@ const hls = require('hls-server');
 var upload = require('./route/upload/upload');
 var auth = require('./route/auth/auth');
 var watch = require('./route/watch/watch');
-//DataBase
-var db = require('./lib/db');
+
+//MySQL Connection Pool
+const dbPool = require('./lib/db');
 
 //  body-parser || Express v4.16.0 기준으로 express.js에서 자체 제공하기 때문에 따로 import 할 필요가 없다.
 app.use(express.json());
@@ -25,17 +26,12 @@ var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session);
 
 //session MySQL
+const config = require('./lib/db_config.json');
 app.use(session({
     secret : 'keyboard cat',
     resave: false,
     saveUninitialized: true,
-    store:new MySQLStore({
-      host : 'localhost',
-      port:3306,
-      user:'root',
-      password:'111111',
-      database:'opentutorials'
-    })
+    store:new MySQLStore(config)
   }));
 
 // passport
@@ -60,27 +56,30 @@ passport.use(new LocalStrategy(
     },
     function(username, password, done){
         console.log('LocalStrategy', username, password);
-        db.query(`select count(*) as idCount from opentutorials.member where user_id=? and user_pw=?`,[username, password],function(error, result){
-        if(error){
-            throw error;
-        }
-
-        if(result[0].idCount === 1){
+        dbPool.getConnection(function(err, connection){ //Connection 연결
+            connection.query(`select count(*) as idCount from opentutorials.member where user_id=? and user_pw=?`,[username, password],function(error, result){
             if(error){
                 throw error;
             }
-            db.query(`select * from opentutorials.member where user_id=? and user_pw=?`,[username, password],function(error2, result2){
-                //passport.serializeUser에 전송
-                return done(null, result2[0]);
-            });
 
-        }else{
-        return done(null, false, {
-            message : 'Incorrect userInfo.'
+            if(result[0].idCount === 1){
+                if(error){
+                    throw error;
+                }
+                connection.query(`select * from opentutorials.member where user_id=? and user_pw=?`,[username, password],function(error2, result2){
+                    //passport.serializeUser에 전송
+                    return done(null, result2[0]);
+                });
+
+            }else{
+                return done(null, false, {
+                    message : 'Incorrect userInfo.'
+                    });
+                }
+            });
+            connection.release(); //Connection Pool 반환
         });
-        }
-    });
-    }
+    }   
 ));
 
 //upload.js
@@ -113,47 +112,45 @@ app.get('/comment', function(request, response){
         //오류 대비 - 로그인 페이지 이동
         response.send();
     }
-    console.log('data : ', data.comment);
-    console.log('data2 : ', data.videoId);
-    
-    // 그룹에서의 제일 큰 값 + 1 그룹에 새 댓글 저장.
-    db.query('select max(vGroup) as vGroup from comment where v_id=?',[videoId], function(err1, result1){
-        if(err1){
+    dbPool.getConnection(function(err, connection){ //Connection 연결
+        // 그룹에서의 제일 큰 값 + 1 그룹에 새 댓글 저장.
+        connection.query('select max(vGroup) as vGroup from comment where v_id=?',[videoId], function(err1, result1){
+            if(err1){
 
-        }
-        var vGroup = result1[0].vGroup + 1;     //그룹에서의 제일 큰 값 + 1
-        console.log('vGroup : ', vGroup);
-        console.log('id : ', user_id);
-        db.query(`insert into comment (c_index, v_id, vGroup, vStep, vIndent, description, like_count, user_name) VALUES(DEFAULT,?,?,0,0,?,1,?)`
-            ,[videoId, vGroup, data.comment, user_id], function(err2, result2){
-            if(err2){
-                throw err2;
             }
-            //response.send({result : 'success'})
-            db.query('select * from comment where v_id=?',[videoId], function(err3, result3){
-                if(err3){
+            var vGroup = result1[0].vGroup + 1;     //그룹에서의 제일 큰 값 + 1
+            console.log('vGroup : ', vGroup);
+            console.log('id : ', user_id);
+            connection.query(`insert into comment (c_index, v_id, vGroup, vStep, vIndent, description, like_count, user_name) VALUES(DEFAULT,?,?,0,0,?,1,?)`
+                ,[videoId, vGroup, data.comment, user_id], function(err2, result2){
+                if(err2){
+                    throw err2;
                 }
-                response.send({result : result3});
+                //response.send({result : 'success'})
+                connection.query('select * from comment where v_id=?',[videoId], function(err3, result3){
+                    if(err3){
+                    }
+                    response.send({result : result3});
+                    
+                });
             });
         });
+        connection.release(); //Connection Pool 반환
     });
-
-    // console.log('comment :',data.comment);
-    // console.log('videoId :',data.videoId);
-
-   
 });
 app.get('/', function(request, response){
     var title = "DongTube";
     console.log("user : ", request.user);
-
-    db.query(`select * from video`, function(error, result){
+    dbPool.getConnection(function(err, connection){ //Connection 연결
+        connection.query(`select * from video`, function(error, result){
         //console.log(result);
         //var videoList = template.list(result);
         // var html = template.HTML(title, videoList, `<a href='/upload'>upload</a>`,``,``);
         // response.send(html);
         response.render(__dirname + '/public/views/main.ejs', {title : title, list : result, request});
-    }); 
+        });
+        connection.release(); //Connection Pool 반환
+    });
 });
 
 const server = app.listen(3000);

@@ -10,7 +10,7 @@ var encoding = require('../../lib/ffmpeg');
 var multer = require('multer');
 
 //DataBase
-var db = require('../../lib/db');
+const dbPool = require('../../lib/db');
 
 //static
 router.use(express.static("public"));
@@ -25,31 +25,38 @@ router.get('/hls', function(request, response){
         console.log('filename : ', filename);
         var fileId = shortId.generate();
         console.log('userId : ', request.user.user_id);
-        // 디비에 저장
-        db.query(`INSERT INTO video VALUES (?,?,'C:\\Users\\lancelot\\NodeJsProjects\\videoStream\\video',?,NOW(),?,?)`, [fileId, filename,request.user.user_id,0,0], function(error, result){
-            //로컬에 저장( 파일 나누기 작업)
-            encoding.hls(file[0], fileId, response);
-        }); 
-    });
-});
-router.get('/delVideo', function(request, response){
-    console.log(request.query.id);
-    db.query(`delete from video where videoId=?`,[request.query.id], function(error, result){   
-        fs2.emptyDirSync(`./videos/${request.query.id}`);
-        fs.rmdir(`./videos/${request.query.id}`, function(error){
-            response.redirect('/');
+        dbPool.getConnection(function(err, connection){ //Connection 연결
+            // 디비에 저장
+            connection.query(`INSERT INTO video VALUES (?,?,'C:\\Users\\lancelot\\NodeJsProjects\\videoStream\\video',?,NOW(),?,?)`, [fileId, filename,request.user.user_id,0,0], function(error, result){
+                //로컬에 저장( 파일 나누기 작업)
+                encoding.hls(file[0], fileId, response);
+            });
+        connection.release(); //Connection Pool 반환
         });
     });
 });
-router.get('/upload', (request, response) =>{
-    
-    db.query(`select * from video`, function(error, result){
-        if(request.user){
-            response.render('../public/views/upload.ejs', {request : request});
-        }else{
-            response.redirect('/auth/login');
-        }
+router.get('/delVideo', function(request, response){
+    dbPool.getConnection(function(err, connection){ //Connection 연결
+        connection.query(`delete from video where videoId=?`,[request.query.id], function(error, result){   
+            fs2.emptyDirSync(`./videos/${request.query.id}`);
+            fs.rmdir(`./videos/${request.query.id}`, function(error){
+                response.redirect('/');
+            });
+        });
+        connection.release(); //Connection Pool 반환
     });
+});
+router.get('/upload', (request, response) =>{
+    dbPool.getConnection(function(err, connection){ //Connection 연결
+        connection.query(`select * from video`, function(error, result){
+            if(request.user){
+                response.render('../public/views/upload.ejs', {request : request});
+            }else{
+                response.redirect('/auth/login');
+            }
+        });
+    });
+    connection.release(); //Connection Pool 반환
 });
 //<input type="file" name="file" id="file" required="true" accept="routerlication/JSON">
 //router.post('/upload_process', upload.single("file") ,function(req, res){
@@ -89,7 +96,6 @@ router.post('/upload_process',function(req, res){
         //     fileName: res.req.file.filename,
         // });
     });
-    //console.log(request.file);
 });
 
 module.exports = router;

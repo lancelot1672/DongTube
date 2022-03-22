@@ -20,5 +20,5 @@ CREATE TABLE `comment`(
     `user_name` varchar(20) NOT NULL
 );
 
-insert into comment VALUES(DEFAULT,'9HWszY2uk',1,0,0,'역시 아이유 짱..',1,'lancelot1672');
+insert into comment VALUES(DEFAULT,'9HWszY2uk',1,0,0,'역시 짱..',1,'lancelot1672');
 insert into comment VALUES(DEFAULT,'9HWszY2uk',2,0,0,'대박..',1,'lancelot1672');

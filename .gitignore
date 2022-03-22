@@ -11,6 +11,9 @@ lerna-debug.log*
 videos/
 uploads/
 
+#DB 설정파일
+db_config.json
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
