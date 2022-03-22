@@ -12,7 +12,7 @@ router.get('/', (request, response) => {
             var author = result[0].author;
             var date = result[0].upload_date;
             var c_data;
-            connection.query('select * from comment where v_Id=?',[videoId], function(err, result3){
+            connection.query(`select user_name, description, DATE_FORMAT(add_date, '%Y.%m.%d.') as add_date from comment where v_Id=? order by vGroup desc`,[videoId], function(err, result3){
                 c_data = result3;
                 if(result3.length != 0){
                     console.log(result3);

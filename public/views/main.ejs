@@ -10,6 +10,58 @@
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="../css/styles.css" rel="stylesheet" />
+        <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+        <script>
+            function makeComment(result3){
+                let html = ``;
+                $.each(result3, function(index, el) {
+                    html += `
+                    <div class="d-flex mb-4">
+                
+                    <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." />
+                    </div>
+                        <div class="ms-3">
+                            <div class="fw-bold">
+                                ${el.user_name}
+                                <span id="c_date">${el.add_date}</span>
+                            </div>
+                            ${el.description}
+                        </div>
+                    </div>
+                    `;
+                });
+                $('#test2').html(html);
+            }
+            function newComment(){
+                // 댓글 내용 가져오기
+                var comment = document.getElementById('comment-area').value;
+                
+                if('<%=request.user%>' && comment != ""){
+                    $.ajax({
+                        url: '/comment',
+                        dataType: 'json',
+                        type: 'GET',
+                        data: {
+                            comment : comment,
+                            videoId : 'free'
+                        },
+                        success: function(result){
+                            if(result){
+                                var html = result.result;
+                                // 댓글 창 비우기
+                                document.getElementById('comment-area').value='';
+                                makeComment(html);
+                            }
+                        },
+                        error : function(){
+                            console.log('??');
+                        }
+                    });
+                }else{
+                    alert('로그인 후 이용해주세요');
+                }
+            }
+        </script>
     </head>
     <body>
         <!-- Responsive navbar-->
@@ -69,40 +121,28 @@
                     <section class="mb-5">
                         <div class="card bg-light">
                             <div class="card-body">
-                                <!-- Comment form-->
-                                <form class="mb-4"><textarea class="form-control" rows="3" placeholder="Join the discussion and leave a comment!"></textarea></form>
-                                <!-- Comment with nested comments-->
-                                <div class="d-flex mb-4">
-                                    <!-- Parent comment-->
-                                    <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                    <div class="ms-3">
-                                        <div class="fw-bold">Commenter Name</div>
-                                        If you're going to lead a space frontier, it has to be government; it'll never be private enterprise. Because the space frontier is dangerous, and it's expensive, and it has unquantified risks.
-                                        <!-- Child comment 1-->
-                                        <div class="d-flex mt-4">
-                                            <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                            <div class="ms-3">
-                                                <div class="fw-bold">Commenter Name</div>
-                                                And under those conditions, you cannot establish a capital-market evaluation of that enterprise. You can't get investors.
-                                            </div>
-                                        </div>
-                                        <!-- Child comment 2-->
-                                        <div class="d-flex mt-4">
-                                            <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                            <div class="ms-3">
-                                                <div class="fw-bold">Commenter Name</div>
-                                                When you put money directly to a problem, it makes a good headline.
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="comment-input">
+                                    <!-- Comment form-->
+                                        <textarea class="form-control" id="comment-area" rows="3" placeholder="자유롭게 글을 남겨보세요!!"></textarea>
+                                        <button class="comment-btn" onclick="newComment()">
+                                            댓글
+                                        </button>
                                 </div>
-                                <!-- Single comment-->
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                    <div class="ms-3">
-                                        <div class="fw-bold">Commenter Name</div>
-                                        When I look at the universe and all the ways the universe wants to kill us, I find it hard to reconcile that with statements of beneficence.
+                                <div id='test2'>
+                                    <!-- comment-->
+                                    <%  if(c_data.length != 0){
+                                        for(var i=0; i < c_data.length; i++){ %>
+                                    <!-- Comment with nested comments-->
+                                    <div class="d-flex mb-4">
+                                        <!-- Parent comment-->
+                                        <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
+                                        <div class="ms-3">
+                                            <div class="fw-bold"><%= c_data[i].user_name %> <span id="c_date"><%= c_data[i].add_date %></span></div>
+                                            
+                                            <%= c_data[i].description %>
+                                        </div>
                                     </div>
+                                    <% }} %>
                                 </div>
                             </div>
                         </div>

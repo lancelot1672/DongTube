@@ -606,6 +606,10 @@ progress {
   max-width: 100%;
   height: auto;
 }
+#c_date {
+  font-size: 12px;
+  font-style: italic;
+}
 .comment-input {
   margin-bottom: 20px;
 }

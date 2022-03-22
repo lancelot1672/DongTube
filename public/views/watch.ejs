@@ -23,6 +23,7 @@
                         <div class="ms-3">
                             <div class="fw-bold">
                                 ${el.user_name}
+                                <span id="c_date">${el.add_date}</span>
                             </div>
                             ${el.description}
                         </div>
@@ -32,10 +33,11 @@
                 $('#test2').html(html);
             }
             function newComment(){
+                //댓글 내용 가져오기
                 var comment = document.getElementById('comment-area').value;
-
-                if('<%=request.user%>'){
-                    $.ajax({
+                
+                if('<%=request.user%>' && comment != ""){
+                    $.ajax({    //ajax 비동기 통신
                         url: '/comment',
                         dataType: 'json',
                         type: 'GET',
@@ -46,6 +48,8 @@
                         success: function(result){
                             if(result){
                                 var html = result.result;
+                                // 댓글 창 비우기
+                                document.getElementById('comment-area').value='';
                                 makeComment(html);
                             }
                         },
@@ -121,7 +125,7 @@
                                     <!-- Parent comment-->
                                     <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
                                     <div class="ms-3">
-                                        <div class="fw-bold"><%= c_data[i].user_name %></div>
+                                        <div class="fw-bold"><%= c_data[i].user_name %> <span id="c_date"><%= c_data[i].add_date %></span></div>
                                         <%= c_data[i].description %>
                                         <!-- Child comment 1-->
                                         <!-- <div class="d-flex mt-4">

@@ -121,13 +121,13 @@ app.get('/comment', function(request, response){
             var vGroup = result1[0].vGroup + 1;     //그룹에서의 제일 큰 값 + 1
             console.log('vGroup : ', vGroup);
             console.log('id : ', user_id);
-            connection.query(`insert into comment (c_index, v_id, vGroup, vStep, vIndent, description, like_count, user_name) VALUES(DEFAULT,?,?,0,0,?,1,?)`
+            connection.query(`insert into comment (c_index, v_id, vGroup, vStep, vIndent, description, like_count, user_name, add_date) VALUES(DEFAULT,?,?,0,0,?,1,?, now())`
                 ,[videoId, vGroup, data.comment, user_id], function(err2, result2){
                 if(err2){
                     throw err2;
                 }
                 //response.send({result : 'success'})
-                connection.query('select * from comment where v_id=?',[videoId], function(err3, result3){
+                connection.query(`select user_name, description, DATE_FORMAT(add_date, '%Y.%m.%d.') as add_date from comment where v_id=? order by vGroup desc`,[videoId], function(err3, result3){
                     if(err3){
                     }
                     response.send({result : result3});
@@ -143,11 +143,13 @@ app.get('/', function(request, response){
     console.log("user : ", request.user);
     dbPool.getConnection(function(err, connection){ //Connection 연결
         connection.query(`select * from video`, function(error, result){
-        //console.log(result);
-        //var videoList = template.list(result);
-        // var html = template.HTML(title, videoList, `<a href='/upload'>upload</a>`,``,``);
-        // response.send(html);
-        response.render(__dirname + '/public/views/main.ejs', {title : title, list : result, request});
+            connection.query(`select user_name, description, DATE_FORMAT(add_date, '%Y.%m.%d.') as add_date from comment where v_Id=? order by vGroup desc`,['free'], function(error2, result2){
+                // title : title
+                // list : 동영상 리스트
+                // request : user객체를 담은 request 전체
+                // c_data : comment data
+                response.render(__dirname + '/public/views/main.ejs', {title : title, list : result, request : request, c_data : result2});
+            });
         });
         connection.release(); //Connection Pool 반환
     });

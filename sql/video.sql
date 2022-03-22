@@ -17,8 +17,11 @@ CREATE TABLE `comment`(
     `vIndent` int NOT NULL,
     `description` varchar(100) NOT NULL,
     `like_count` int NOT NULL,
-    `user_name` varchar(20) NOT NULL
+    `user_name` varchar(20) NOT NULL,
+    `add_date` date NOT NULL
 );
 
 insert into comment VALUES(DEFAULT,'9HWszY2uk',1,0,0,'역시 짱..',1,'lancelot1672');
 insert into comment VALUES(DEFAULT,'9HWszY2uk',2,0,0,'대박..',1,'lancelot1672');
+
+ALTER table `comment` ADD COLUMN `add_date` DATE NOT NULL;
