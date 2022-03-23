@@ -35,7 +35,7 @@ router.get('/hls', function(request, response){
         });
     });
 });
-router.get('/delVideo', function(request, response){
+router.get('/delete-Video', function(request, response){
     dbPool.getConnection(function(err, connection){ //Connection 연결
         connection.query(`delete from video where videoId=?`,[request.query.id], function(error, result){   
             fs2.emptyDirSync(`./videos/${request.query.id}`);
@@ -55,12 +55,10 @@ router.get('/upload', (request, response) =>{
                 response.redirect('/auth/login');
             }
         });
+        connection.release(); //Connection Pool 반환
     });
-    connection.release(); //Connection Pool 반환
 });
-//<input type="file" name="file" id="file" required="true" accept="routerlication/JSON">
-//router.post('/upload_process', upload.single("file") ,function(req, res){
-router.post('/upload_process',function(req, res){
+router.post('/upload-process',function(req, res){
     let storage = multer.diskStorage({
         destination: (req, file, done) => {
             done(null, './uploads'); //uploads라는 폴더에 file을 저장

@@ -83,7 +83,7 @@ passport.use(new LocalStrategy(
 ));
 
 //upload.js
-app.use('/uv', upload);
+app.use('/video', upload);
 
 //auth.js
 app.use('/auth',auth);
@@ -91,7 +91,7 @@ app.use('/auth',auth);
 //watch.js
 app.use('/watch', watch);
 
-app.post('/auth/login_process', passport.authenticate('local', {
+app.post('/auth/login-process', passport.authenticate('local', {
 //successRedirect : '/',
 failureRedirect : '/auth/login'
 }),
