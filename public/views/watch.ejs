@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title><%=title %></title>
+        <title><%=v_data[0].title %></title>
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Core theme CSS (includes Bootstrap)-->
@@ -61,6 +61,38 @@
                     alert('로그인 후 이용해주세요');
                 }
             }
+            function fn_like(){
+                if('<%=request.user%>'){
+                $.ajax({
+                    url : '/video/like',
+                    dataType : 'json',
+                    type: 'GET',
+                    data: {
+                        v_id : '<%=videoId%>',
+                        user_id : '<%=request.user.user_id%>'
+                    },
+                    success: function(result){
+                            if(result){
+                                var flag = result.result;
+                                var html;
+                                console.log(result.result);
+                                if(flag === 'true'){
+                                    html = `♥ ${result.like_count}`;
+                                }else{
+                                    html = `♡ ${result.like_count}`;
+                                }
+                                $('#like_btn').text(html);
+                            }
+                        },
+                        error : function(){
+                            console.log('fn_like error');
+                        }
+                });
+            }else{
+                //로그인 안돼있으면
+                alert('로그인 후 이용해주세요');
+                }
+            }
         </script>
     </head>
     <body>
@@ -97,12 +129,27 @@
                         
                         <header class="mb-4">
                             <!-- Post title-->
-                            <h1 class="fw-bolder mb-1"><%= title %></h1>
+                            <h1 class="fw-bolder mb-1"><%= v_data[0].title %></h1>
                             <!-- Post meta content-->
-                            <div class="text-muted fst-italic mb-2">조회수 <%=data[0].watch_count %> · <%=data[0].upload_date %></div>
+                            <div class="text-muted fst-italic mb-2">조회수 <%=v_data[0].watch_count %> · <%=v_data[0].upload_date %></div>
                             <!-- Post categories-->
                             <a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>
                             <a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>
+                            
+                            <% if(request.user) { 
+                                //좋아요 한 비디오 이면
+                                if(like){
+                            %>
+                                <button id="like_btn" onclick="fn_like()">♥ <%= v_data[0].like_count %></button>
+                            <% }else{ 
+                                //좋아요 한 비디오가 아니면
+                                %>
+                                <button id="like_btn" onclick="fn_like()">♡ <%= v_data[0].like_count %></button>
+                            <% }}else{ 
+                                //로그인 정보가 없으면
+                                %>
+                                <button id="like_btn" onclick="fn_like()">♡ <%= v_data[0].like_count %></button>
+                            <% }%>
                         </header>
                         <!-- Post content-->
                     </article>

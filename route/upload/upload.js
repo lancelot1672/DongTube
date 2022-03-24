@@ -18,6 +18,88 @@ router.use(express.static("public"));
 //shortId
 const shortId = require('shortid');
 
+//like
+router.get('/like', function(request, response){
+    var v_id = request.query.v_id;
+    var user_id = request.query.user_id;
+    
+    dbPool.getConnection(function(err, connection){ //Connection 연결
+        connection.query(`select * from v_like where user_id=? and v_id=?`,[user_id, v_id],function(err1, result1){
+            if(err1){
+                console.log('err1');
+            }
+            console.log('u_like : ', result1[0]);
+            if(!result1[0]){
+                //좋아요 테이블에 기록이 없으면 기록 넣기
+                // 좋아요가 안돼있으면
+                    // video 정보에 좋아요 + 1
+                    connection.query(`insert into v_like (user_id, v_id, u_like) VALUES (?,?, 1)`,[user_id, v_id],function(err2){
+                        if(err2){
+                            console.log('insert err2');
+                        }
+                        // 비디오 정보의 like 숫자에 반영 (+1)
+                        connection.query(`update video SET like_count = like_count + 1 where videoid=?`,[v_id],function(err3){
+                            if(err3){
+                                console.log('err3');
+                            }
+
+                            connection.query(`select like_count from video where videoid=?`,[v_id],function(err4, result4){
+                                if(err4){
+                                    console.log('err4');
+                                }
+                                // true 반환
+                                response.send({result : 'true' ,like_count : result4[0].like_count});
+                            });
+                        });
+                    });
+            }else{
+                if(result1[0] && result1[0].u_like === 1){
+                    //이미 좋아요가 되어있으면
+                    // video 정보에 좋아요 - 1
+                    connection.query(`update v_like SET u_like = 0 where user_id=? and v_id=? and u_like = 1`,[user_id, v_id],function(err2){
+                        if(err2){
+                            console.log('update err2');
+                        }
+                        // 비디오 정보의 like 숫자에 반영 (-1)
+                        connection.query(`update video SET like_count = like_count - 1 where videoId=?`,[v_id],function(err3){
+                            if(err3){
+                                console.log('err3');
+                            }
+                            connection.query(`select like_count from video where videoId=?`,[v_id],function(err4, result4){
+                                if(err4){
+                                    console.log('err4');
+                                }
+                                // false 반환
+                                response.send({result : 'false' ,like_count : result4[0].like_count});
+                            });
+                        });
+                    });
+                }else{
+                    //좋아요 안돼있으면
+                    connection.query(`update v_like SET u_like = 1 where user_id=? and v_id=? and u_like = 0`,[user_id, v_id],function(err2){
+                        if(err2){
+                            console.log('update err2');
+                        }
+                        // 비디오 정보의 like 숫자에 반영 (+1)
+                        connection.query(`update video SET like_count = like_count + 1 where videoId=?`,[v_id],function(err3){
+                            if(err3){
+                                console.log('err3');
+                            }
+                            connection.query(`select like_count from video where videoId=?`,[v_id],function(err4, result4){
+                                if(err4){
+                                    console.log('err4');
+                                }
+                                // true 반환
+                                response.send({result : 'true' ,like_count : result4[0].like_count});
+                            });
+                        });
+                    });
+                }
+            }
+        });
+        connection.release(); //Connection Pool 반환
+    });
+});
 router.get('/hls', function(request, response){
     fs.readdir('./uploads', function(error, file){
 
